@@ -1,0 +1,128 @@
+Name,Scratch Name,Block Name
+abs,abs,Abs ()
+answer,answer,Answer
+addToList,append:toList:,Add () to ()
+backgroundNumber,backgroundIndex,Backdrop #
+ifOnEdgeBounce,bounceOffEdge,If on Edge; Bounce
+broadcast,broadcast:,Broadcast ()
+changeEffectBy,changeGraphicEffect:by:,Change () Effect by ()
+changePenColorBy,changePenHueBy:,Change Pen Color by ()
+changePenShadeBy,changePenShadeBy:,Change Pen Shade by ()
+changePenSizeBy,changePenSizeBy:,Change Pen Size by ()
+changeSizeBy,changeSizeBy:,Change Size by ()
+changeTempoBy,changeTempoBy:,Change Tempo by ()
+changeVarBy,changeVar:by:,Change () by ()
+changeVolumeBy,changeVolumeBy:,Change Volume by ()
+changeXBy,changeXposBy:,Change X by ()
+changeYBy,changeYposBy:,Change Y by ()
+clear,clearPenTrails,Clear
+clearCounter,CLR_COUNT,Clear Counter
+colorIsTouching,color:sees:,Color () is Touching ()?
+goToFront,comeToFront,Go to Front
+mathOperationOf,computeFunction:of:,() of () (Operators block)
+join,concatenate:with:,Join ()()
+getList,contentsOfList:,() (List block)
+costumeNumber,costumeIndex,Costume #
+costumeName,costumeName,Costume Name
+counter,COUNT,Counter
+createCloneOf,createCloneOf,Create Clone of ()
+deleteThisClone,deleteClone,Delete This Clone
+deleteItemInList,deleteLine:ofList:,Delete () of ()
+distanceTo,distanceTo:,Distance to ()
+askAndWait,doAsk,Ask () and Wait
+broadcastAndWait,doBroadcastAndWait,Broadcast () and Wait
+playSoundUntilDone,doPlaySoundAndWait,Play Sound () Until Done
+stopThisScript,doReturn,Stop Script
+waitUntil,doWaitUntil,Wait Until ()
+clearEffects,filterReset,Clear Graphic Effects
+moveSteps,forward:,Move () Steps
+getAttribute,getAttribute:of:,() of () (Sensing block)
+itemOfList,getLine:ofList:,Item () of ()
+username,getUserName,Username
+glide,glideSecs:toX:y:elapsed:from:,Glide () Secs to X: () Y: ()
+goBackLayers,goBackByLayers:,Go Back () Layers
+goTo,gotoSpriteOrMouse:,Go to ()
+goToCoordinates,gotoX:y:,Go to X: () Y: ()
+direction,heading,Direction
+pointInDirection,heading:,Point in Direction ()
+hide,hide,Hide
+hideAll,hideAll,Hide All Sprites
+hideList,hideList:,Hide List ()
+hideVariable,hideVariable:,Hide Variable ()
+incrementCounter,INCR_COUNT,Incr Counter
+insertIntoList,insert:at:ofList:,Insert () at () of ()
+setInstrument,instrument:,Set Instrument to ()
+isLoud,isLoud,Loud?
+keyPressed,keyPressed:,Key () Pressed?
+letterAt,letter:of:,Letter () of ()
+lengthOfList,lineCountOfList:,Length of () (List block)
+listContains,list:contains:,() Contains ()
+switchCostume,lookLike:,Switch Costume to ()
+setInstrumentMidi,midiInstrument:,Set Instrument to ()
+isMousePressed,mousePressed,Mouse Down?
+mouseX,mouseX,Mouse X
+mouseY,mouseY,Mouse Y
+nextCostume,nextCostume,Next Costume
+nextBackdrop,nextScene,Next Backdrop
+playNote,noteOn:duration:elapsed:from:,Play Note () for () Beats
+setPenColor,penColor:,Set Pen Color to ()
+setPenSize,penSize:,Set Pen Size to ()
+playDrum,playDrum,Play Drum () for () Beats
+playSound,playSound:,Play Sound ()
+pointTowards,pointTowards:,Point Towards ()
+penDown,putPenDown,Pen Down
+penUp,putPenUp,Pen Up
+random,randomFrom:to:,Pick Random () to ()
+getVariable,readVariable,() (Variables block)
+restFor,rest:elapsed:from:,Rest for () Beats
+round,rounded,Round ()
+say,say:,Say ()
+sayFor,say:duration:elapsed:from:,Say () for () Secs
+sayNothing,sayNothing,Say Nothing
+size,scale,Size
+backdropName,sceneName,Backdrop Name
+videoOn,senseVideoMotion,Video () on ()
+sensorValue,sensor:,() Sensor Value
+isSensorPressed,sensorPressed:,Sensor ()?
+setEffectTo,setGraphicEffect:to:,Set () Effect to ()
+setListItem,setLine:ofList:to:,Replace Item () of () With ()
+setPenColor,setPenHueTo:,Set Pen Color to ()
+setPenShade,setPenShadeTo:,Set Pen Shade to ()
+setRotationStyle,setRotationStyle,Set Rotation Style ()
+setSize,setSizeTo:,Set Size to ()%
+setTempo,setTempoTo:,Set Tempo to () bpm
+setVariable,setVar:to:,Set () to ()
+setVideoOn,setVideoState,Turn Video ()
+setVideoTransparency,setVideoTransparency,Set Video Transparency to ()%
+setVolume,setVolumeTo:,Set Volume to ()%
+show,show,Show
+showList,showList:,Show List ()
+showVariable,showVariable:,Show Variable ()
+loudness,soundLevel,Loudness
+sqrt,sqrt,Sqrt ()
+stamp,stampCostume,Stamp
+switchBackdrop,startScene,Switch Backdrop to ()
+switchBackdropAndWait,startSceneAndWait,Switch Backdrop to () and Wait
+stopAll,stopAll,Stop All
+stopAllSounds,stopAllSounds,Stop All Sounds
+stop,stopScripts,Stop ()
+stopSound,stopSound:,Stop Sound ()
+lengthOf,stringLength:,Length of () (Operators block)
+tempo,tempo,Tempo
+think,think:,Think ()
+thinkFor,think:duration:elapsed:from:,Think () for () Secs
+currentTimeAndDate,timeAndDate,Current ()
+timer,timer,Timer
+resetTimer,timerReset,Reset Timer
+daysSince2000,timestamp,Days Since 2000
+isTouching,touching:,Touching ()?
+isTouchingColor,touchingColor:,Touching Color ()?
+pointAwayFromEdge,turnAwayFromEdge,Point Away From Edge
+turnLeft,turnLeft:,Turn () Degrees
+turnRight,turnRight:,Turn () Degrees
+volume,volume,Volume
+wait,wait:elapsed:from:,Wait () Secs
+getX,xpos,X Position
+setX,xpos:,Set X to ()
+getY,ypos,Y Position
+setY,ypos:,Set Y to ()

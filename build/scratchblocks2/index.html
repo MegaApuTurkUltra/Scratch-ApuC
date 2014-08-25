@@ -1,0 +1,24 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
+<link rel="stylesheet" href="scratchblocks2.css">
+<script src="scratchblocks2.js"></script>
+<script src="generator.js"></script>
+<script type="text/javascript">
+function showCode(code){
+	$("#preview").html("");
+	var arr = JSON.parse(code);
+	for(var i=0;i<arr.length;i++){
+		$("#preview").append(gen.generate(arr[i])+"\n\n");
+	}
+	scratchblocks2.parse("pre.blocks");
+}
+window.showCode = showCode;
+</script>
+</head>
+<body>
+<pre id="preview" class="blocks">
+</pre>
+</body>
+</html>
