@@ -1,0 +1,2 @@
+derp[] = array[5];
+derp[5] = derp[6];

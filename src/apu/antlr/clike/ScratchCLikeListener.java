@@ -71,6 +71,16 @@ public interface ScratchCLikeListener extends ParseTreeListener {
 	 */
 	void exitMathExp(@NotNull ScratchCLikeParser.MathExpContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link ScratchCLikeParser#returnStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterReturnStatement(@NotNull ScratchCLikeParser.ReturnStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ScratchCLikeParser#returnStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitReturnStatement(@NotNull ScratchCLikeParser.ReturnStatementContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link ScratchCLikeParser#line}.
 	 * @param ctx the parse tree
 	 */

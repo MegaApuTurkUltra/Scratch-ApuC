@@ -49,6 +49,9 @@ public class Sprite2IO {
 					StandardOpenOption.TRUNCATE_EXISTING,
 					StandardOpenOption.SYNC);
 			fs.close();
+			JOptionPane.showMessageDialog(IdeFrame.instance,
+					"Export successful", "Export",
+					JOptionPane.INFORMATION_MESSAGE);
 		} catch (Exception e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(IdeFrame.instance,

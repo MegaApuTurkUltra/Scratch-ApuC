@@ -91,6 +91,18 @@ public class ScratchCLikeBaseListener implements ScratchCLikeListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterReturnStatement(@NotNull ScratchCLikeParser.ReturnStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitReturnStatement(@NotNull ScratchCLikeParser.ReturnStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterLine(@NotNull ScratchCLikeParser.LineContext ctx) { }
 	/**
 	 * {@inheritDoc}

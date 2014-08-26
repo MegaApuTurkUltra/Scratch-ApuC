@@ -3,7 +3,7 @@
  */
 package apu.scratch.converter;
 
-import static apu.antlr.clike.ScratchCLikeLexer.*;
+import static apu.antlr.clike.ScratchCLikeLexer.ARRAY_TAG;
 import static apu.antlr.clike.ScratchCLikeLexer.ATOMIC_METHOD_TAG;
 import static apu.antlr.clike.ScratchCLikeLexer.BOOL_AND;
 import static apu.antlr.clike.ScratchCLikeLexer.BOOL_EQUALS;
@@ -29,8 +29,16 @@ import static apu.antlr.clike.ScratchCLikeLexer.MATH_TIMES;
 import static apu.antlr.clike.ScratchCLikeLexer.METHOD_DEF_TAG;
 import static apu.antlr.clike.ScratchCLikeLexer.OPENP;
 import static apu.antlr.clike.ScratchCLikeLexer.REPEAT_TAG;
+import static apu.antlr.clike.ScratchCLikeLexer.RETURN_TAG;
 import static apu.antlr.clike.ScratchCLikeLexer.SINGLE_FRAME_TAG;
 import static apu.antlr.clike.ScratchCLikeLexer.STRINGLITERAL;
+import static apu.antlr.clike.ScratchCLikeLexer.WHEN_CLICKED;
+import static apu.antlr.clike.ScratchCLikeLexer.WHEN_CLONED;
+import static apu.antlr.clike.ScratchCLikeLexer.WHEN_FLAG;
+import static apu.antlr.clike.ScratchCLikeLexer.WHEN_KEY;
+import static apu.antlr.clike.ScratchCLikeLexer.WHEN_RECEIVE;
+import static apu.antlr.clike.ScratchCLikeLexer.WHEN_SENSOR;
+import static apu.antlr.clike.ScratchCLikeLexer.WHEN_TAG;
 import static apu.antlr.clike.ScratchCLikeLexer.WHILE_TAG;
 
 import java.awt.BorderLayout;
@@ -302,6 +310,7 @@ public class IdeFrame extends JFrame {
 		styles.put(WHEN_CLONED, style);
 		styles.put(WHEN_SENSOR, style);
 		styles.put(WHEN_FLAG, style);
+		styles.put(RETURN_TAG, style);
 		style = context.addStyle("keyword", defaultStyle);
 		StyleConstants.setBold(style, true);
 		StyleConstants.setForeground(style, new Color(0.5f, 0f, 0.5f));

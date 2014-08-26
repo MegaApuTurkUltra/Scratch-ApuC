@@ -15,7 +15,9 @@ emptyBraces : OPENB body CLOSEB;
 methodBody : METHOD_DEF_TAG (ATOMIC_METHOD_TAG)? IDENTIFIER OPENP 
 	(paramsDef)? CLOSEP OPENB body CLOSEB;
 
-line : (methodCall | variableSet | arrayCreate) SEMICOLON;
+line : (methodCall | variableSet | arrayCreate | returnStatement) SEMICOLON;
+
+returnStatement : RETURN_TAG (varExp)?;
 
 whenDef : WHEN_TAG 
 	(WHEN_CLICKED | WHEN_RECEIVE | WHEN_KEY
@@ -91,8 +93,10 @@ MATH_MODULO : '%';
 FOR_TAG : 'for';
 WHILE_TAG : 'while';
 
-METHOD_DEF_TAG : 'void';
+METHOD_DEF_TAG : 'def';
 ATOMIC_METHOD_TAG : '@atomic';
+
+RETURN_TAG : 'return';
 
 WHEN_TAG : '@when';
 WHEN_CLICKED : 'clicked';

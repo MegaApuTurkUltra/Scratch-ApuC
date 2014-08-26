@@ -1,0 +1,101 @@
+<project name="Scratch" basedir="." default="main">
+
+	<property name="src.dir" value="src" />
+	<property name="lsrc.dir" value="launcher-src" />
+	<property name="jsrc.dir" value="json-src" />
+
+	<property name="build.dir" value="build" />
+	<property name="classes.dir" value="${build.dir}/classes" />
+	<property name="lclasses.dir" value="${build.dir}/launcher-classes" />
+	<property name="jclasses.dir" value="${build.dir}/json-classes" />
+
+	<property name="jar.dir" value="dist" />
+	<property name="main-class" value="apu.scratch.converter.NsLauncher" />
+	<property name="lib.dir" value="lib" />
+
+	<property name="ide.name" value="IDE" />
+	<property name="mainjar.name" value="ApuC" />
+	<property name="cmdline.name" value="apuc-compile" />
+
+	<path id="classpath">
+		<fileset dir="${lib.dir}" includes="**/*.jar" />
+		<fileset file="${lsrc.dir}/lib/swt-4.3-win32-win32-x86_64_s.jar" />
+		<fileset file="${lsrc.dir}/lib/DJNativeSwing.jar" />
+		<fileset file="${lsrc.dir}/lib/DJNativeSwing-SWT.jar" />
+		<pathelement path="${jclasses.dir}" />
+	</path>
+
+	<target name="clean">
+		<delete dir="${build.dir}" />
+	</target>
+
+	<target name="compile">
+		<mkdir dir="${classes.dir}" />
+		<mkdir dir="${lclasses.dir}" />
+		<mkdir dir="${jclasses.dir}" />
+		<echo message="Compiling JSON source" />
+		<javac includeantruntime="false" srcdir="${jsrc.dir}" destdir="${jclasses.dir}" />
+		<echo message="Compiling IDE source" />
+		<javac includeantruntime="false" srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath" />
+		<echo message="Compiling launcher source" />
+		<javac includeantruntime="false" srcdir="${lsrc.dir}" destdir="${lclasses.dir}" classpathref="classpath" />
+	</target>
+
+	<target name="jar" depends="compile">
+		<mkdir dir="${jar.dir}" />
+		<echo>Building main IDE jar</echo>
+		<jar destfile="${lsrc.dir}/${ide.name}.jar">
+			<manifest>
+			</manifest>
+			<fileset dir="${jclasses.dir}" />
+			<fileset dir="${classes.dir}" />
+			<fileset dir="${src.dir}" includes="scratchblocks2/**/*" />
+			<fileset file="${src.dir}/builtin.csv" />
+			<fileset file="${src.dir}/Sprite1.sprite2" />
+		</jar>
+		<echo>Building launcher jar</echo>
+		<jar destfile="${jar.dir}/${mainjar.name}.jar">
+			<manifest>
+				<attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader" />
+				<attribute name="Rsrc-Main-Class" value="${main-class}" />
+				<attribute name="Class-Path" value="." />
+				<attribute name="Rsrc-Class-Path" value="./ commons-lang3-3.3.2.jar MozillaInterfaces-1.8.1.3.jar antlr-4.4-runtime.jar seaglasslookandfeel-0.2.jar jna_WindowUtils.jar jna-4.0.0.jar" />
+				<attribute name="SplashScreen-Image" value="logo.png" />
+			</manifest>
+			<zipfileset src="jar-in-jar-loader.zip" />
+			<fileset dir="${lclasses.dir}" />
+			<fileset file="${lsrc.dir}/logo.png" />
+			<zipfileset dir="${lib.dir}" includes="jna-4.0.0.jar" />
+			<zipfileset dir="${lib.dir}" includes="commons-lang3-3.3.2.jar" />
+			<zipfileset dir="${lib.dir}" includes="MozillaInterfaces-1.8.1.3.jar" />
+			<zipfileset dir="${lib.dir}" includes="antlr-4.4-runtime.jar" />
+			<zipfileset dir="${lib.dir}" includes="seaglasslookandfeel-0.2.jar" />
+			<zipfileset dir="${lib.dir}" includes="jna_WindowUtils.jar" />
+			<zipfileset dir="${lsrc.dir}" includes="IDE.jar" />
+			<zipfileset dir="${lsrc.dir}" includes="lib/*" />
+		</jar>
+		<echo>Building command line compiler jar</echo>
+		<jar destfile="${jar.dir}/${cmdline.name}.jar">
+			<manifest>
+				<attribute name="Main-Class" value="apu.scratch.converter.ScratchConverter" />
+			</manifest>
+			<fileset dir="${classes.dir}" includes="apu/scratch/converter/ScratchConverter*" />
+			<fileset dir="${classes.dir}" includes="apu/antlr/clike/*" />
+			<fileset dir="${jclasses.dir}" />
+			<fileset file="${src.dir}/builtin.csv" />
+			<fileset file="${src.dir}/Sprite1.sprite2" />
+			<zipfileset src="${lib.dir}/antlr-4.4-runtime.jar" />
+		</jar>
+		<echo>Build complete</echo>
+	</target>
+
+	<target name="run" depends="jar">
+		<java fork="true" classname="${main-class}">
+			<classpath>
+				<path location="${jar.dir}/${mainjar.name}.jar" />
+			</classpath>
+		</java>
+	</target>
+
+	<target name="main" depends="clean,jar" />
+</project>

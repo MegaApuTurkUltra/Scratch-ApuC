@@ -75,6 +75,7 @@ import apu.antlr.clike.ScratchCLikeParser.ParamDefContext;
 import apu.antlr.clike.ScratchCLikeParser.ParamsContext;
 import apu.antlr.clike.ScratchCLikeParser.ParamsDefContext;
 import apu.antlr.clike.ScratchCLikeParser.RepeatSingleFrameLoopContext;
+import apu.antlr.clike.ScratchCLikeParser.ReturnStatementContext;
 import apu.antlr.clike.ScratchCLikeParser.VarExpContext;
 import apu.antlr.clike.ScratchCLikeParser.VariableSetContext;
 import apu.antlr.clike.ScratchCLikeParser.WhenDefContext;
@@ -193,6 +194,11 @@ public class ScratchConverter {
 		String desc;
 		int numParams;
 		List<String> paramNames = new ArrayList<String>();
+		String returnVarName;
+
+		public Method() {
+			returnVarName = Context.getUniqueReturnVar();
+		}
 
 		public String toString() {
 			StringBuffer buf = new StringBuffer();
@@ -207,9 +213,26 @@ public class ScratchConverter {
 		}
 	}
 
+	static class MethodCall {
+		JSONArray call;
+		Method calledMethod;
+		String returnName;
+
+		public MethodCall(JSONArray call, Method calledMethod) {
+			super();
+			this.call = call;
+			this.calledMethod = calledMethod;
+			this.returnName = Context.getUniqueReturnVar();
+		}
+	}
+
 	static class Context {
 		static List<Integer> usedIds = new ArrayList<>();
+		static List<Integer> usedReturnIds = new ArrayList<>();
 		static Random random = new Random();
+
+		static Stack<MethodCall> methodCalls = new Stack<MethodCall>();
+
 		int uid;
 		Context parent;
 		List<String> variables = new ArrayList<String>();
@@ -262,6 +285,15 @@ public class ScratchConverter {
 			} else {
 				return name;
 			}
+		}
+
+		public static String getUniqueReturnVar() {
+			int returnUid;
+			do {
+				returnUid = Math.abs(random.nextInt());
+			} while (usedReturnIds.contains(returnUid));
+			usedReturnIds.add(returnUid);
+			return "return" + returnUid;
 		}
 	}
 
@@ -352,6 +384,16 @@ public class ScratchConverter {
 		System.out.println("Done");
 	}
 
+	/**
+	 * Compiles code and returns a {@link CompileResult}<br/>
+	 * NOTE: NOT thread safe
+	 * 
+	 * @param code
+	 *            The code to compile
+	 * @return The result
+	 * @throws Exception
+	 *             If a serious syntax error happens
+	 */
 	public static CompileResult compile(final String code) throws Exception {
 		methods.clear();
 		errors.clear();
@@ -548,15 +590,49 @@ public class ScratchConverter {
 		VariableSetContext varSet;
 		MethodCallContext methodCall;
 		ArrayCreateContext arrayCreate;
+		ReturnStatementContext returnSt;
 		if ((varSet = line.variableSet()) != null) {
 			parseVariableSet(varSet);
 		}
 		if ((methodCall = line.methodCall()) != null) {
-			parseMethodCall(methodCall);
+			parseMethodCall(methodCall, false);
 		}
 		if ((arrayCreate = line.arrayCreate()) != null) {
 			parseArrayCreate(arrayCreate);
 		}
+		if ((returnSt = line.returnStatement()) != null) {
+			parseReturnStatement(returnSt);
+		}
+		while (Context.methodCalls.size() > 0) {
+			MethodCall call = Context.methodCalls.pop();
+			Object o = current.get(current.length() - 1);
+			current.put(current.length() - 1, call.call);
+			current.put(newJsonArray(
+					"setVar:to:",
+					call.returnName,
+					newJsonArray("readVariable",
+							call.calledMethod.returnVarName)));
+			current.put(o);
+		}
+	}
+
+	static void parseReturnStatement(ReturnStatementContext returnSt) {
+		if (currentContext.belongsTo == null) {
+			Token start = returnSt.getStart();
+			errors.add(new CompileError(start.getStartIndex(), start
+					.getStopIndex(), start.getLine(), start
+					.getCharPositionInLine(),
+					"Return is not allowed outside of a method"));
+			return;
+		}
+		if (returnSt.varExp() != null) {
+			pushCurrent(newJsonArray("setVar:to:",
+					currentContext.belongsTo.returnVarName));
+			parseVarExp(returnSt.varExp());
+			popCurrent();
+		}
+		pushCurrent(newJsonArray("stopScripts", "this script"));
+		popCurrent();
 	}
 
 	static void parseArrayCreate(ArrayCreateContext arrayCreate) {
@@ -598,17 +674,18 @@ public class ScratchConverter {
 		}
 	}
 
-	static void parseMethodCall(MethodCallContext methodCall) {
+	static void parseMethodCall(MethodCallContext methodCall,
+			boolean needsReturnVal) {
 		String identifier = methodCall.IDENTIFIER().getText();
-		
-		if(identifier.equals("length")){
+
+		if (identifier.equals("length")) {
 			ParamsContext params = methodCall.params();
-			if(params == null || params.arrayDef() == null){
+			if (params == null || params.arrayDef() == null) {
 				Token start = (Token) methodCall.IDENTIFIER().getPayload();
 				errors.add(new CompileError(start.getStartIndex(), start
 						.getStopIndex(), start.getLine(), start
-						.getCharPositionInLine(), "length needs an array parameter: "
-						+ identifier));
+						.getCharPositionInLine(),
+						"length needs an array parameter: " + identifier));
 				return;
 			}
 			String arrayId = params.arrayDef().IDENTIFIER().getText();
@@ -646,7 +723,16 @@ public class ScratchConverter {
 				name.append(" %s"); // because string input works for everything
 				// also laziness
 			}
-			pushCurrent(newJsonArray("call", name.toString()));
+			if (needsReturnVal) {
+				JSONArray callJson = newJsonArray("call", name.toString());
+				MethodCall call = new MethodCall(callJson, m);
+				pushCurrent(newJsonArray("readVariable", call.returnName));
+				popCurrent();
+				stack.push(current);
+				current = callJson;
+				Context.methodCalls.push(call);
+			} else
+				pushCurrent(newJsonArray("call", name.toString()));
 		}
 
 		ParamsContext params = methodCall.params();
@@ -1021,7 +1107,7 @@ public class ScratchConverter {
 
 			MethodCallContext methodCall = condition.methodCall();
 			if (methodCall != null) {
-				parseMethodCall(methodCall);
+				parseMethodCall(methodCall, true);
 				return;
 			}
 
@@ -1187,7 +1273,7 @@ public class ScratchConverter {
 		} else if ((arrayId = mathAtom.arrayIdentifier()) != null) {
 			parseArrayItem(arrayId);
 		} else if ((methodCall = mathAtom.methodCall()) != null) {
-			parseMethodCall(methodCall);
+			parseMethodCall(methodCall, true);
 		} else {
 			Token token = ((Token) mathAtom.getChild(0).getPayload());
 			int type = token.getType();
@@ -1306,7 +1392,8 @@ public class ScratchConverter {
 				if (param != null) {
 					varNames.put(param.getText());
 				} else {
-					Token start = (Token) paramDef.arrayDef().IDENTIFIER().getPayload();
+					Token start = (Token) paramDef.arrayDef().IDENTIFIER()
+							.getPayload();
 					errors.add(new CompileError(start.getStartIndex(), start
 							.getStopIndex(), start.getLine(), start
 							.getCharPositionInLine(),
