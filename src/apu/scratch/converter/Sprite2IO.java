@@ -34,8 +34,8 @@ public class Sprite2IO {
 				in.close();
 			}
 
-			URI uri = URI.create("jar:file:/"
-					+ f.getAbsolutePath().replaceAll("\\\\", "/"));
+			URI uri = f.toURI();
+			uri = new URI("jar:file", uri.getHost(), uri.getPath(), uri.getFragment());
 			FileSystem fs = FileSystems.newFileSystem(uri,
 					new HashMap<String, String>());
 			Path sprite = fs.getPath("/sprite.json");
