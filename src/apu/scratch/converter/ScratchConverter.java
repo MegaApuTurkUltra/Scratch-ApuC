@@ -232,6 +232,24 @@ public class ScratchConverter {
 		static List<Integer> usedReturnIds = new ArrayList<>();
 		static Random random = new Random();
 
+		static Map<String, String> builtInMath = new HashMap<>();
+		static {
+			builtInMath.put("abs", "abs");
+			builtInMath.put("floor", "floor");
+			builtInMath.put("ceiling", "ceiling");
+			builtInMath.put("sqrt", "sqrt");
+			builtInMath.put("sin", "sin");
+			builtInMath.put("cos", "cos");
+			builtInMath.put("tan", "tan");
+			builtInMath.put("asin", "asin");
+			builtInMath.put("acos", "acos");
+			builtInMath.put("atan", "atan");
+			builtInMath.put("ln", "ln");
+			builtInMath.put("log", "log");
+			builtInMath.put("powe", "e ^");
+			builtInMath.put("pow10", "10 ^");
+		}
+
 		static Stack<MethodCall> methodCalls = new Stack<MethodCall>();
 
 		int uid;
@@ -690,8 +708,50 @@ public class ScratchConverter {
 				return;
 			}
 			String arrayId = params.arrayDef().IDENTIFIER().getText();
+			
+			if (currentContext.belongsTo != null
+					&& currentContext.belongsTo.paramNames.contains(arrayId)) {
+				Token start = params.arrayDef().getStart();
+				errors.add(new CompileError(start.getStartIndex(), start
+						.getStopIndex(), start.getLine(), start
+						.getCharPositionInLine(),
+						"Array paramaters are not allowed: " + arrayId));
+			} else {
+				if (currentContext.hasVar(arrayId)) {
+					arrayId = currentContext.getLocalVarName(arrayId);
+				} else if (currentContext.parentHasVar(arrayId)) {
+					arrayId = currentContext.getNonLocalVarName(arrayId);
+				} else {
+					Token start = params.arrayDef().getStart();
+					errors.add(new CompileError(start.getStartIndex(), start
+							.getStopIndex(), start.getLine(), start
+							.getCharPositionInLine(), arrayId
+							+ " has not been set yet in this context"));
+					currentContext.variables.add(arrayId);
+					arrayId = currentContext.getLocalVarName(arrayId);
+				}
+			}
+			
 			pushCurrent(newJsonArray("lineCountOfList:"));
 			current.put(arrayId);
+			popCurrent();
+			return;
+		}
+
+		if (Context.builtInMath.containsKey(identifier)) {
+			if (methodCall.params() == null
+					|| methodCall.params().varExp().size() != 1) {
+				Token start = methodCall.getStart();
+				errors.add(new CompileError(start.getStartIndex(), start
+						.getStopIndex(), start.getLine(), start
+						.getCharPositionInLine(),
+						"Built in math functions require exactly 1 parameter: "
+								+ identifier));
+				return;
+			}
+			pushCurrent(newJsonArray("computeFunction:of:",
+					Context.builtInMath.get(identifier)));
+			parseVarExp(methodCall.params().varExp(0));
 			popCurrent();
 			return;
 		}

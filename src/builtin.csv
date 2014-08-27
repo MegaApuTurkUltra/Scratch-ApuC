@@ -46,7 +46,6 @@ goToCoordinates,gotoX:y:,Go to X: () Y: ()
 direction,heading,Direction
 pointInDirection,heading:,Point in Direction ()
 hide,hide,Hide
-hideAll,hideAll,Hide All Sprites
 hideList,hideList:,Hide List ()
 hideVariable,hideVariable:,Hide Variable ()
 incrementCounter,INCR_COUNT,Incr Counter
