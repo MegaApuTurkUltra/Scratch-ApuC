@@ -123,6 +123,12 @@ def derp(){
 say(derp() - derp());
 ```
 
+### Recursion ###
+
+Recursion is fully supported, and is even thread/when-block safe [to some extent]! Using the power of ApuC hacks, each user defined function gets an extra parameter for its calling thread.  
+Return variables are updated in each thread's own call stack.  
+Note that if your function has variables, it may not be thread safe as different "when" scripts may access the variables at the same time. I don't see a fix for this yet.
+
 ### When blocks ###
 
 ApuC code that isn't a function automatically goes in a When Green Flag script, but you can also add your own when blocks with the `@when` annotation.
