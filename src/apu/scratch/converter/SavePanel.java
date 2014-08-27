@@ -73,7 +73,8 @@ public class SavePanel extends JPanel {
 	protected void performAction() {
 		if (save && chooser.getSelectedFile().exists()) {
 			if (JOptionPane.showConfirmDialog(this,
-					"This file already exists! Do you want to overwrite it?",
+					"This file already exists! Do you want to overwrite "
+							+ (apuc ? "it" : "its JSON code") + "?",
 					"File exists", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
 				return;
 			}

@@ -52,7 +52,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.io.File;
+import java.io.PrintWriter;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -115,6 +117,8 @@ public class IdeFrame extends JFrame {
 	private Runnable compileTimer;
 	private Thread compileThread;
 	private JLabel lblFile;
+
+	private String stackTrace = null;
 
 	public static IdeFrame instance;
 
@@ -420,6 +424,13 @@ public class IdeFrame extends JFrame {
 				int line = me.getY() / lineHeight;
 				line++;
 				StringBuilder tooltip = new StringBuilder();
+
+				if (stackTrace != null) {
+					lines.setToolTipText("<html>Serious compile error:<br/>"
+							+ stackTrace.replaceAll("\n", "<br/>") + "</html>");
+					return;
+				}
+
 				tooltip.append("<html>");
 				int i = 0;
 				for (CompileError error : currentErrors) {
@@ -468,6 +479,7 @@ public class IdeFrame extends JFrame {
 	}
 
 	private void checkCode(boolean save) {
+		stackTrace = null;
 		try {
 			String code = doc.getText(0, doc.getEndPosition().getOffset());
 			lines.setBackground(Color.white);
@@ -492,8 +504,15 @@ public class IdeFrame extends JFrame {
 				}
 			} catch (Exception e) {
 				lines.setBackground(new Color(1f, 0.5f, 0.5f));
+				StyledDocument doc = lines.getStyledDocument();
+				doc.setCharacterAttributes(0, doc.getEndPosition().getOffset(),
+						linesRedStyle, true);
+
+				StringWriter w = new StringWriter();
+				e.printStackTrace(new PrintWriter(w));
+				stackTrace = w.toString();
+				e.printStackTrace();
 				if (save) {
-					e.printStackTrace();
 					JOptionPane.showMessageDialog(this,
 							"Compile failed!\n" + e.getMessage(), "",
 							JOptionPane.ERROR_MESSAGE);

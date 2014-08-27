@@ -195,11 +195,6 @@ public class ScratchConverter {
 		String desc;
 		int numParams;
 		List<String> paramNames = new ArrayList<String>();
-		String returnVarName;
-
-		public Method() {
-			returnVarName = Context.getUniqueReturnVar();
-		}
 
 		public String toString() {
 			StringBuffer buf = new StringBuffer();
@@ -217,13 +212,31 @@ public class ScratchConverter {
 	static class MethodCall {
 		JSONArray call;
 		Method calledMethod;
-		String returnName;
+		JSONArray returnVal;
 
-		public MethodCall(JSONArray call, Method calledMethod) {
+		public MethodCall(JSONArray call, JSONArray returnVal,
+				Method calledMethod) {
 			super();
 			this.call = call;
+			this.returnVal = returnVal;
 			this.calledMethod = calledMethod;
-			this.returnName = Context.getUniqueReturnVar();
+		}
+	}
+
+	static class When {
+		static List<Integer> usedIds = new ArrayList<>();
+		static Random random = new Random();
+		int uid;
+
+		public When() {
+			do {
+				uid = Math.abs(random.nextInt());
+			} while (usedIds.contains(uid));
+			usedIds.add(uid);
+		}
+
+		public String getReturnStackName() {
+			return "returnStack" + uid;
 		}
 	}
 
@@ -306,14 +319,14 @@ public class ScratchConverter {
 			}
 		}
 
-		public static String getUniqueReturnVar() {
-			int returnUid;
-			do {
-				returnUid = Math.abs(random.nextInt());
-			} while (usedReturnIds.contains(returnUid));
-			usedReturnIds.add(returnUid);
-			return "return" + returnUid;
-		}
+		// public static String getUniqueReturnVar() {
+		// int returnUid;
+		// do {
+		// returnUid = Math.abs(random.nextInt());
+		// } while (usedReturnIds.contains(returnUid));
+		// usedReturnIds.add(returnUid);
+		// return "return" + returnUid;
+		// }
 	}
 
 	static Map<String, Method> methods = new HashMap<>();
@@ -329,6 +342,9 @@ public class ScratchConverter {
 
 	static Context currentContext;
 	static Stack<Context> contexts = new Stack<>();
+
+	static When currentWhen;
+	static Stack<When> whens = new Stack<>();
 
 	private static Map<String, Method> builtInMethods = new HashMap<>();
 
@@ -422,6 +438,8 @@ public class ScratchConverter {
 		stack.clear();
 		currentContext = null;
 		contexts.clear();
+		whens.clear();
+		currentWhen = null;
 
 		methods.putAll(builtInMethods);
 
@@ -473,6 +491,8 @@ public class ScratchConverter {
 
 		currentContext = new Context(null);
 
+		currentWhen = new When();
+
 		parseBody(main.body());
 		// for (CompileError s : errors)
 		// System.err.println(s.line + ":" + s.positionInLine + s.message);
@@ -486,6 +506,16 @@ public class ScratchConverter {
 		result.scripts = arr;
 		result.errors = new ArrayList<>(errors);
 		return result;
+	}
+
+	static void pushWhen() {
+		When when = new When();
+		whens.push(currentWhen);
+		currentWhen = when;
+	}
+
+	static void popWhen() {
+		currentWhen = whens.pop();
 	}
 
 	static void pushContext() {
@@ -557,11 +587,11 @@ public class ScratchConverter {
 					methods.put(identifier, m);
 					m.identifier = identifier;
 					m.desc = "User defined";
-					m.numParams = 0;
+					m.numParams = 1;
 					ParamsDefContext paramsDef = method.paramsDef();
 					if (paramsDef != null) {
 						List<ParamDefContext> paramDefs = paramsDef.paramDef();
-						m.numParams = paramDefs.size();
+						m.numParams = paramDefs.size() + 1;
 						for (ParamDefContext param : paramDefs) {
 							String pIdentifier = param.IDENTIFIER().getText();
 							if (m.paramNames.contains(pIdentifier)) {
@@ -622,16 +652,34 @@ public class ScratchConverter {
 		if ((returnSt = line.returnStatement()) != null) {
 			parseReturnStatement(returnSt);
 		}
+		int size = Context.methodCalls.size();
+		int size2 = size;
+		Object returnStackName = currentWhen.getReturnStackName();
+		if(currentContext.belongsTo!=null){
+			returnStackName = newJsonArray("getParam", "returnStackName", "r");
+		}
 		while (Context.methodCalls.size() > 0) {
 			MethodCall call = Context.methodCalls.pop();
 			Object o = current.get(current.length() - 1);
 			current.put(current.length() - 1, call.call);
-			current.put(newJsonArray(
-					"setVar:to:",
-					call.returnName,
-					newJsonArray("readVariable",
-							call.calledMethod.returnVarName)));
 			current.put(o);
+			call.returnVal.put("getLine:ofList:");
+			call.returnVal.put(newJsonArray("-",
+					newJsonArray("lineCountOfList:", returnStackName), size - 1));
+			size--;
+			call.returnVal.put(returnStackName);
+		}
+		for (int i = 0; i < size2; i++) {
+			pushCurrent(newJsonArray(
+					"deleteLine:ofList:",
+					returnSt == null ? "last" : newJsonArray("-",
+							newJsonArray("lineCountOfList:", returnStackName),
+							1), returnStackName));
+			popCurrent();
+		}
+		if (returnSt != null) {
+			pushCurrent(newJsonArray("stopScripts", "this script"));
+			popCurrent();
 		}
 	}
 
@@ -645,13 +693,11 @@ public class ScratchConverter {
 			return;
 		}
 		if (returnSt.varExp() != null) {
-			pushCurrent(newJsonArray("setVar:to:",
-					currentContext.belongsTo.returnVarName));
+			pushCurrent(newJsonArray("append:toList:"));
 			parseVarExp(returnSt.varExp());
+			current.put(newJsonArray("getParam", "returnStackName", "r"));
 			popCurrent();
 		}
-		pushCurrent(newJsonArray("stopScripts", "this script"));
-		popCurrent();
 	}
 
 	static void parseArrayCreate(ArrayCreateContext arrayCreate) {
@@ -708,7 +754,7 @@ public class ScratchConverter {
 				return;
 			}
 			String arrayId = params.arrayDef().IDENTIFIER().getText();
-			
+
 			if (currentContext.belongsTo != null
 					&& currentContext.belongsTo.paramNames.contains(arrayId)) {
 				Token start = params.arrayDef().getStart();
@@ -731,7 +777,7 @@ public class ScratchConverter {
 					arrayId = currentContext.getLocalVarName(arrayId);
 				}
 			}
-			
+
 			pushCurrent(newJsonArray("lineCountOfList:"));
 			current.put(arrayId);
 			popCurrent();
@@ -786,8 +832,9 @@ public class ScratchConverter {
 			}
 			if (needsReturnVal) {
 				JSONArray callJson = newJsonArray("call", name.toString());
-				MethodCall call = new MethodCall(callJson, m);
-				pushCurrent(newJsonArray("readVariable", call.returnName));
+				JSONArray returnVal = newJsonArray();
+				MethodCall call = new MethodCall(callJson, returnVal, m);
+				pushCurrent(returnVal);
 				popCurrent();
 				stack.push(current);
 				current = callJson;
@@ -802,6 +849,13 @@ public class ScratchConverter {
 			for (VarExpContext varExp : varExps) {
 				parseVarExp(varExp);
 			}
+		}
+		if (!isBuiltin) {
+			Object returnStackName = currentWhen.getReturnStackName();
+			if(currentContext.belongsTo != null){
+				returnStackName = newJsonArray("getParam", "returnStackName", "r");
+			}
+			current.put(returnStackName);
 		}
 		popCurrent();
 	}
@@ -987,6 +1041,7 @@ public class ScratchConverter {
 	}
 
 	static void parseWhen(WhenDefContext when) {
+		pushWhen();
 		JSONArray methodArr = new JSONArray();
 		methodArr.put(10).put(10);
 		JSONArray scripts = new JSONArray();
@@ -1027,11 +1082,13 @@ public class ScratchConverter {
 		current = scripts;
 
 		pushContext();
+		currentContext.belongsTo = null;
 		parseBody(when.body());
 		popContext();
 
 		methodDefs.add(methodArr);
 		current = stack.pop();
+		popWhen();
 	}
 
 	static void parseRepeatLoop(RepeatSingleFrameLoopContext repeat) {
@@ -1364,6 +1421,16 @@ public class ScratchConverter {
 		if (currentContext.belongsTo != null
 				&& currentContext.belongsTo.paramNames.contains(identifier)) {
 			log("Param");
+			pushCurrent(newJsonArray("getParam", identifier, "r"));
+			// strangely the Wiki has nothing
+			// about getParam so I don't even
+			// know what "r" does
+			// I assumed params had "getVariable" too
+			// but then I tried it an it didn't work
+			// so I had to manually look at some JSON
+			// to figure this out
+			popCurrent();
+			return;
 		} else {
 			if (currentContext.hasVar(identifier)) {
 				identifier = currentContext.getLocalVarName(identifier);
@@ -1462,6 +1529,7 @@ public class ScratchConverter {
 				}
 			}
 		}
+		varNames.put("returnStackName");
 		stack.push(current);
 		current = scripts;
 

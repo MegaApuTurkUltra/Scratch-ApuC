@@ -39,6 +39,7 @@ moveSteps,forward:,Move () Steps
 getAttribute,getAttribute:of:,() of () (Sensing block)
 itemOfList,getLine:ofList:,Item () of ()
 username,getUserName,Username
+getParam,getParam,"Define block param with name: () idk what this next thing is just put ""r"": ()"
 glide,glideSecs:toX:y:elapsed:from:,Glide () Secs to X: () Y: ()
 goBackLayers,goBackByLayers:,Go Back () Layers
 goTo,gotoSpriteOrMouse:,Go to ()
