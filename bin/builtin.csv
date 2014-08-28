@@ -53,7 +53,7 @@ incrementCounter,INCR_COUNT,Incr Counter
 insertIntoList,insert:at:ofList:,Insert () at () of ()
 setInstrument,instrument:,Set Instrument to ()
 isLoud,isLoud,Loud?
-keyPressed,keyPressed:,Key () Pressed?
+isKeyPressed,keyPressed:,Key () Pressed?
 letterAt,letter:of:,Letter () of ()
 lengthOfList,lineCountOfList:,Length of () (List block)
 listContains,list:contains:,() Contains ()

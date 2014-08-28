@@ -565,7 +565,7 @@ public class ScratchConverter {
 	}
 
 	static void methodPass(BodyContext body) {
-		if (body.children == null || body.children.size() == 0)
+		if (body == null || body.children == null || body.children.size() == 0)
 			return;
 		for (ParseTree tree : body.children) {
 			if (tree instanceof BracesContext) {
@@ -625,7 +625,7 @@ public class ScratchConverter {
 
 	static void parseBody(BodyContext body) {
 		log("Body");
-		if (body.children == null || body.children.size() == 0)
+		if (body == null || body.children == null || body.children.size() == 0)
 			return;
 		for (ParseTree tree : body.children) {
 			if (tree instanceof BracesContext)
@@ -655,7 +655,7 @@ public class ScratchConverter {
 		int size = Context.methodCalls.size();
 		int size2 = size;
 		Object returnStackName = currentWhen.getReturnStackName();
-		if(currentContext.belongsTo!=null){
+		if (currentContext.belongsTo != null) {
 			returnStackName = newJsonArray("getParam", "returnStackName", "r");
 		}
 		while (Context.methodCalls.size() > 0) {
@@ -664,8 +664,10 @@ public class ScratchConverter {
 			current.put(current.length() - 1, call.call);
 			current.put(o);
 			call.returnVal.put("getLine:ofList:");
-			call.returnVal.put(newJsonArray("-",
-					newJsonArray("lineCountOfList:", returnStackName), size - 1));
+			call.returnVal
+					.put(newJsonArray("-",
+							newJsonArray("lineCountOfList:", returnStackName),
+							size - 1));
 			size--;
 			call.returnVal.put(returnStackName);
 		}
@@ -852,8 +854,9 @@ public class ScratchConverter {
 		}
 		if (!isBuiltin) {
 			Object returnStackName = currentWhen.getReturnStackName();
-			if(currentContext.belongsTo != null){
-				returnStackName = newJsonArray("getParam", "returnStackName", "r");
+			if (currentContext.belongsTo != null) {
+				returnStackName = newJsonArray("getParam", "returnStackName",
+						"r");
 			}
 			current.put(returnStackName);
 		}
@@ -894,7 +897,8 @@ public class ScratchConverter {
 		if (varSet.PLUS_PLUS() != null) {
 			if (varSet.IDENTIFIER() != null) {
 				pushCurrent(newJsonArray("setVar:to:", identifier));
-				pushCurrent(newJsonArray("+", newJsonArray("readVariable", identifier), 1));
+				pushCurrent(newJsonArray("+",
+						newJsonArray("readVariable", identifier), 1));
 				popCurrent();
 				popCurrent();
 			} else {
@@ -917,7 +921,8 @@ public class ScratchConverter {
 		} else if (varSet.MINUS_MINUS() != null) {
 			if (varSet.IDENTIFIER() != null) {
 				pushCurrent(newJsonArray("setVar:to:", identifier));
-				pushCurrent(newJsonArray("-", newJsonArray("readVariable", identifier), 1));
+				pushCurrent(newJsonArray("-",
+						newJsonArray("readVariable", identifier), 1));
 				popCurrent();
 				popCurrent();
 			} else {
@@ -940,7 +945,8 @@ public class ScratchConverter {
 		} else if (varSet.PLUS_EQUALS() != null) {
 			if (varSet.IDENTIFIER() != null) {
 				pushCurrent(newJsonArray("setVar:to:", identifier));
-				pushCurrent(newJsonArray("+", newJsonArray("readVariable", identifier)));
+				pushCurrent(newJsonArray("+",
+						newJsonArray("readVariable", identifier)));
 				parseVarExp(varSet.varExp());
 				popCurrent();
 				popCurrent();
@@ -964,7 +970,8 @@ public class ScratchConverter {
 		} else if (varSet.MINUS_EQUALS() != null) {
 			if (varSet.IDENTIFIER() != null) {
 				pushCurrent(newJsonArray("setVar:to:", identifier));
-				pushCurrent(newJsonArray("-", newJsonArray("readVariable", identifier)));
+				pushCurrent(newJsonArray("-",
+						newJsonArray("readVariable", identifier)));
 				parseVarExp(varSet.varExp());
 				popCurrent();
 				popCurrent();
@@ -1189,6 +1196,8 @@ public class ScratchConverter {
 	}
 
 	static void parseConditionAndOr(ConditionAndOrContext andOr) {
+		if (andOr == null)
+			return;
 		parseConditionItems(andOr.conditionItem(), andOr.BOOL_AND(),
 				andOr.BOOL_OR());
 	}

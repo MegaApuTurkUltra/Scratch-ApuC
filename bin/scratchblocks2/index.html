@@ -1,24 +1,48 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
+<script
+	src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
 <link rel="stylesheet" href="scratchblocks2.css">
 <script src="scratchblocks2.js"></script>
 <script src="generator.js"></script>
 <script type="text/javascript">
-function showCode(code){
-	$("#preview").html("");
-	var arr = JSON.parse(code);
-	for(var i=0;i<arr.length;i++){
-		$("#preview").append(gen.generate(arr[i])+"\n\n");
+	var ssource = false;
+	var lastCode = "";
+	function showCode(code) {
+		$("#preview").html("");
+		var arr = JSON.parse(code);
+		var text = "";
+		for ( var i = 0; i < arr.length; i++) {
+			text += gen.generate(arr[i]) + "\n\n";
+		}
+		lastCode = text;
+		$("#preview").text(text);
+		if (!ssource)
+			scratchblocks2.parse("pre.blocks");
 	}
-	scratchblocks2.parse("pre.blocks");
-}
-window.showCode = showCode;
+	window.showCode = showCode;
+	$(document).ready(function() {
+		$("#source").mouseup(function() {
+			ssource = !ssource;
+			if (ssource) {
+				$(this).html("Show scratchblocks2 source: <b>ON</b>");
+				$("#preview").text(lastCode);
+			} else {
+				$(this).html("Show scratchblocks2 source: OFF");
+				scratchblocks2.parse("pre.blocks");
+			}
+		});
+	});
 </script>
 </head>
 <body>
-<pre id="preview" class="blocks">
+	<button type="button" id="source">Show scratchblocks2 source:
+		OFF</button>
+	<button type="button"
+		onclick="window.prompt('Copy to clipboard: Ctrl+C, Enter', lastCode);">Copy
+		scratchblocks2 source to clipboard</button>
+	<pre id="preview" class="blocks">
 </pre>
 </body>
 </html>
