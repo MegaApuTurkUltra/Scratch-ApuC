@@ -894,7 +894,7 @@ public class ScratchConverter {
 		if (varSet.PLUS_PLUS() != null) {
 			if (varSet.IDENTIFIER() != null) {
 				pushCurrent(newJsonArray("setVar:to:", identifier));
-				pushCurrent(newJsonArray("+", identifier, 1));
+				pushCurrent(newJsonArray("+", newJsonArray("readVariable", identifier), 1));
 				popCurrent();
 				popCurrent();
 			} else {
@@ -917,7 +917,7 @@ public class ScratchConverter {
 		} else if (varSet.MINUS_MINUS() != null) {
 			if (varSet.IDENTIFIER() != null) {
 				pushCurrent(newJsonArray("setVar:to:", identifier));
-				pushCurrent(newJsonArray("-", identifier, 1));
+				pushCurrent(newJsonArray("-", newJsonArray("readVariable", identifier), 1));
 				popCurrent();
 				popCurrent();
 			} else {
@@ -940,7 +940,7 @@ public class ScratchConverter {
 		} else if (varSet.PLUS_EQUALS() != null) {
 			if (varSet.IDENTIFIER() != null) {
 				pushCurrent(newJsonArray("setVar:to:", identifier));
-				pushCurrent(newJsonArray("+", identifier));
+				pushCurrent(newJsonArray("+", newJsonArray("readVariable", identifier)));
 				parseVarExp(varSet.varExp());
 				popCurrent();
 				popCurrent();
@@ -964,7 +964,7 @@ public class ScratchConverter {
 		} else if (varSet.MINUS_EQUALS() != null) {
 			if (varSet.IDENTIFIER() != null) {
 				pushCurrent(newJsonArray("setVar:to:", identifier));
-				pushCurrent(newJsonArray("-", identifier));
+				pushCurrent(newJsonArray("-", newJsonArray("readVariable", identifier)));
 				parseVarExp(varSet.varExp());
 				popCurrent();
 				popCurrent();
@@ -1425,7 +1425,7 @@ public class ScratchConverter {
 			// strangely the Wiki has nothing
 			// about getParam so I don't even
 			// know what "r" does
-			// I assumed params had "getVariable" too
+			// I assumed params had "readVariable" too
 			// but then I tried it an it didn't work
 			// so I had to manually look at some JSON
 			// to figure this out
