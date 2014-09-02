@@ -40,7 +40,7 @@ condition : (varExp
 methodCall : IDENTIFIER OPENP params? CLOSEP;
 variableSet : ((IDENTIFIER | arrayIdentifier) (EQUALS | PLUS_EQUALS | MINUS_EQUALS)
     varExp) | ((IDENTIFIER | arrayIdentifier) (PLUS_PLUS | MINUS_MINUS));
-varExp : ((NUMBER | STRINGLITERAL | IDENTIFIER) | (arrayIdentifier | mathExp));
+varExp : ((NUMBER | STRINGLITERAL | IDENTIFIER | HEX_CODE) | (arrayIdentifier | mathExp));
 arrayCreate : arrayDef EQUALS (SINGLE_FRAME_TAG)? ARRAY_TAG OPENC NUMBER CLOSEC;
 arrayDef : IDENTIFIER OPENC CLOSEC;
 paramsDef : (paramDef COMMA)* paramDef;
@@ -133,8 +133,9 @@ COMMA : ',';
 OPENC : '[';
 CLOSEC : ']';
 NUMBER
-    :    ('0'..'9')+ ('.' ('0'..'9')+)?
+    :    (MATH_MINUS)? ('0'..'9')+ ('.' ('0'..'9')+)?
     ;
+HEX_CODE : ('0x' | '0X' | '#') [0-9abcdefABCDEF]+;
 LETTER : [a-zA-Z_];
 WS  
     :   (' ' | '\t' | '\r'| '\n') -> skip

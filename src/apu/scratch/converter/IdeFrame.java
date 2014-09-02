@@ -4,10 +4,13 @@
 package apu.scratch.converter;
 
 import java.awt.BorderLayout;
+import java.awt.Desktop;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -20,6 +23,8 @@ import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
+
+import org.json.JSONArray;
 
 import apu.scratch.converter.CodePanel.Tab;
 import apu.scratch.converter.ScratchConverter.CompileResult;
@@ -85,7 +90,7 @@ public class IdeFrame extends JFrame {
 		FlowLayout flowLayout = (FlowLayout) header.getLayout();
 		flowLayout.setAlignment(FlowLayout.LEADING);
 		leftSplit.add(header, BorderLayout.NORTH);
-		
+
 		JButton btnNew = new JButton("New");
 		btnNew.addActionListener(new ActionListener() {
 			@Override
@@ -99,28 +104,29 @@ public class IdeFrame extends JFrame {
 		btnOpen.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//				Tab tab = panel.getCurrentlySelectedTab();
-//				if (tab == null)
-//					return;
-//				DefaultStyledDocument doc = tab.doc;
-//				String code;
-//				try {
-//					code = doc.getText(0, doc.getEndPosition().getOffset());
-//				} catch (BadLocationException e1) {
-//					e1.printStackTrace();
-//					return;
-//				}
-//				if (!code.trim().isEmpty()) {
-//					if (JOptionPane
-//							.showConfirmDialog(
-//									IdeFrame.this,
-//									"You have code in the editor. If you have "
-//											+ "not saved it, opening a new file will cause"
-//											+ " it to be lost. Continue?",
-//									"Continue?", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
-//						return;
-//				}
-				File f = SavePanel.showDialog(true, false);
+				// Tab tab = panel.getCurrentlySelectedTab();
+				// if (tab == null)
+				// return;
+				// DefaultStyledDocument doc = tab.doc;
+				// String code;
+				// try {
+				// code = doc.getText(0, doc.getEndPosition().getOffset());
+				// } catch (BadLocationException e1) {
+				// e1.printStackTrace();
+				// return;
+				// }
+				// if (!code.trim().isEmpty()) {
+				// if (JOptionPane
+				// .showConfirmDialog(
+				// IdeFrame.this,
+				// "You have code in the editor. If you have "
+				// + "not saved it, opening a new file will cause"
+				// + " it to be lost. Continue?",
+				// "Continue?", JOptionPane.YES_NO_OPTION) ==
+				// JOptionPane.NO_OPTION)
+				// return;
+				// }
+				File f = SavePanel.showDialog(false, true, false);
 				if (f != null && f.exists()) {
 					Tab tab = panel.addNewTab();
 					DefaultStyledDocument doc = tab.doc;
@@ -195,13 +201,57 @@ public class IdeFrame extends JFrame {
 					return;
 				}
 
-				File f = SavePanel.showDialog(false, true);
+				File f = SavePanel.showDialog(false, false, true);
 				if (f != null) {
 					Sprite2IO.writeToZip(f, result.scripts);
 				}
 			}
 		});
 		header.add(btnExport);
+
+		JButton btnExportAll = new JButton("Export all");
+		btnExportAll.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (JOptionPane
+						.showConfirmDialog(
+								IdeFrame.this,
+								"All your open tabs will be exported into a project file. Continue?",
+								"Export all", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+					return;
+				}
+				Map<String, JSONArray> codes = new HashMap<String, JSONArray>();
+				for (Tab t : panel.tabs) {
+					t.checkCode(false);
+					if (t.currentJson != null) {
+						codes.put(t.title.getText() + Math.random(),
+								t.currentJson);
+					}
+				}
+				File f = SavePanel.showDialog(true, false, true);
+				if (f != null) {
+					try {
+						ScratchConverter.createProjectFile(f, codes);
+						int x = JOptionPane.showOptionDialog(IdeFrame.this,
+								"Export all successful", "Export all",
+								JOptionPane.YES_NO_OPTION,
+								JOptionPane.INFORMATION_MESSAGE, null,
+								new Object[] { "Dismiss",
+										"Open in Scratch Offline Editor" },
+								"Dismiss");
+						if (x == 1) {
+							Desktop.getDesktop().open(f);
+						}
+					} catch (Exception e1) {
+						e1.printStackTrace();
+						JOptionPane.showMessageDialog(IdeFrame.this,
+								"Export all failed: " + e1.getMessage(),
+								"Export all", JOptionPane.ERROR_MESSAGE);
+					}
+				}
+			}
+		});
+		header.add(btnExportAll);
 
 		lblFile = new JLabel("File: ");
 		header.add(lblFile);

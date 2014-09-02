@@ -23,12 +23,14 @@ public class SavePanel extends JPanel {
 	private JFileChooser chooser;
 	public boolean save = false;
 	public boolean apuc = true;
+	public boolean sb2 = false;
 
 	public File selected = null;
 	JDialog owner;
 
-	public SavePanel(boolean save, boolean apuc, JDialog owner) {
+	public SavePanel(boolean sb2, boolean save, boolean apuc, JDialog owner) {
 		this.owner = owner;
+		this.sb2 = sb2;
 		this.save = save;
 		this.apuc = apuc;
 		setLayout(new BorderLayout(0, 0));
@@ -37,16 +39,19 @@ public class SavePanel extends JPanel {
 		FileFilter ff = new FileFilter() {
 			@Override
 			public String getDescription() {
-				return SavePanel.this.apuc ? "ApuC files" : "Sprite2 files";
+				return SavePanel.this.sb2 ? "Sb2 files"
+						: (SavePanel.this.apuc ? "ApuC files" : "Sprite2 files");
 			}
 
 			@Override
 			public boolean accept(File f) {
 				if (f.isDirectory())
 					return true;
-				return SavePanel.this.apuc ? f.getName().endsWith(".apuc") : f
-						.getName().endsWith(".sprite2")
-						|| f.getName().endsWith(".zip");
+				return SavePanel.this.sb2 ? (f.getName().endsWith(".sb2") || f
+						.getName().endsWith(".zip")) : (SavePanel.this.apuc ? f
+						.getName().endsWith(".apuc") : f.getName().endsWith(
+						".sprite2")
+						|| f.getName().endsWith(".zip"));
 			}
 		};
 		chooser.addChoosableFileFilter(ff);
@@ -95,10 +100,10 @@ public class SavePanel extends JPanel {
 		owner.setVisible(false);
 	}
 
-	public static File showDialog(boolean apuc, boolean save) {
+	public static File showDialog(boolean sb2, boolean apuc, boolean save) {
 		JDialog d = new JDialog();
 		d.setModalityType(ModalityType.APPLICATION_MODAL);
-		SavePanel p = new SavePanel(save, apuc, d);
+		SavePanel p = new SavePanel(sb2, save, apuc, d);
 		d.setContentPane(new JPanel(new BorderLayout()));
 		d.getContentPane().add(p, BorderLayout.CENTER);
 		d.pack();

@@ -7,6 +7,7 @@ import static apu.antlr.clike.ScratchCLikeLexer.BOOL_EQUALS;
 import static apu.antlr.clike.ScratchCLikeLexer.BOOL_GT;
 import static apu.antlr.clike.ScratchCLikeLexer.BOOL_LT;
 import static apu.antlr.clike.ScratchCLikeLexer.BOOL_NEQUALS;
+import static apu.antlr.clike.ScratchCLikeLexer.HEX_CODE;
 import static apu.antlr.clike.ScratchCLikeLexer.IDENTIFIER;
 import static apu.antlr.clike.ScratchCLikeLexer.NUMBER;
 import static apu.antlr.clike.ScratchCLikeLexer.STRINGLITERAL;
@@ -22,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -163,6 +165,42 @@ public class ScratchConverter {
 		System.exit(1);
 	}
 
+	public static void createProjectFile(File f, Map<String, JSONArray> sprites)
+			throws IOException, URISyntaxException {
+		JSONArray children = new JSONArray();
+		int i = 1;
+		for (String name : sprites.keySet()) {
+			JSONObject sprite = new JSONObject(spriteBase);
+			sprite.put("indexInLibrary", i);
+			sprite.put("objName", name);
+			sprite.put("scripts", sprites.get(name));
+
+			i++;
+			children.put(sprite);
+		}
+
+		if (!f.exists()) {
+			InputStream in = ScratchConverter.class
+					.getResourceAsStream("/BaseProject.sb2");
+			Files.copy(in, Paths.get(f.toURI()));
+			in.close();
+		}
+
+		URI uri = f.toURI();
+		uri = new URI("jar:file", uri.getHost(), uri.getPath(),
+				uri.getFragment());
+		FileSystem fs = FileSystems.newFileSystem(uri,
+				new HashMap<String, String>());
+		Path json = fs.getPath("/project.json");
+		JSONObject obj = new JSONObject(new String(Files.readAllBytes(json)));
+		if (obj.has("children"))
+			obj.remove("children");
+		obj.put("children", children);
+		Files.write(json, obj.toString().getBytes(), StandardOpenOption.WRITE,
+				StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.SYNC);
+		fs.close();
+	}
+
 	public static void writeToZip(File f, JSONArray code) throws IOException,
 			URISyntaxException {
 		if (!f.exists()) {
@@ -178,8 +216,7 @@ public class ScratchConverter {
 		FileSystem fs = FileSystems.newFileSystem(uri,
 				new HashMap<String, String>());
 		Path sprite = fs.getPath("/sprite.json");
-		JSONObject obj;
-		obj = new JSONObject(new String(Files.readAllBytes(sprite)));
+		JSONObject obj = new JSONObject(new String(Files.readAllBytes(sprite)));
 		if (obj.has("scripts"))
 			obj.remove("scripts");
 		obj.put("scripts", code);
@@ -346,6 +383,8 @@ public class ScratchConverter {
 	static When currentWhen;
 	static Stack<When> whens = new Stack<>();
 
+	static String spriteBase = "";
+
 	private static Map<String, Method> builtInMethods = new HashMap<>();
 
 	static class CompileError {
@@ -390,6 +429,17 @@ public class ScratchConverter {
 	}
 
 	public static void init() throws IOException {
+		Reader base = new InputStreamReader(
+				ScratchConverter.class.getResourceAsStream("/BaseSprite.json"));
+		char[] c = new char[128];
+		int len;
+		StringBuilder sb = new StringBuilder();
+		while ((len = base.read(c)) != -1) {
+			sb.append(c, 0, len);
+		}
+		spriteBase = sb.toString();
+		base.close();
+
 		BufferedReader in = new BufferedReader(new InputStreamReader(
 				ScratchConverter.class.getResourceAsStream("/builtin.csv")));
 		String line;
@@ -1307,6 +1357,9 @@ public class ScratchConverter {
 				parseStringLiteral((TerminalNode) exp);
 			else if (type == IDENTIFIER)
 				parseVariable((TerminalNode) exp);
+			else if (type == HEX_CODE) {
+				current.put(Integer.decode(exp.getText()));
+			}
 		} else {
 			MathExpContext mathExp = varExp.mathExp();
 			if (mathExp != null)

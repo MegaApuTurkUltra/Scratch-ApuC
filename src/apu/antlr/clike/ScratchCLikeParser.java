@@ -27,8 +27,8 @@ public class ScratchCLikeParser extends Parser {
 		WHEN_SENSOR=28, WHEN_FLAG=29, REPEAT_TAG=30, SINGLE_FRAME_TAG=31, ARRAY_TAG=32, 
 		IDENTIFIER=33, STRINGLITERAL=34, OPENP=35, CLOSEP=36, OPENB=37, CLOSEB=38, 
 		SEMICOLON=39, EQUALS=40, PLUS_EQUALS=41, MINUS_EQUALS=42, PLUS_PLUS=43, 
-		MINUS_MINUS=44, COMMA=45, OPENC=46, CLOSEC=47, NUMBER=48, LETTER=49, WS=50, 
-		BlockComment=51, LineComment=52;
+		MINUS_MINUS=44, COMMA=45, OPENC=46, CLOSEC=47, NUMBER=48, HEX_CODE=49, 
+		LETTER=50, WS=51, BlockComment=52, LineComment=53;
 	public static final String[] tokenNames = {
 		"<INVALID>", "'true'", "'if'", "'else'", "'&&'", "'||'", "'!'", "'=='", 
 		"'!='", "'>'", "'<'", "'>='", "'<='", "'+'", "'-'", "'*'", "'/'", "'%'", 
@@ -36,7 +36,8 @@ public class ScratchCLikeParser extends Parser {
 		"'received'", "'keyPressed'", "'cloned'", "'sensorGreaterThan'", "'greenFlag'", 
 		"'repeat'", "'@singleframe'", "'array'", "IDENTIFIER", "STRINGLITERAL", 
 		"'('", "')'", "'{'", "'}'", "';'", "'='", "'+='", "'-='", "'++'", "'--'", 
-		"','", "'['", "']'", "NUMBER", "LETTER", "WS", "BlockComment", "LineComment"
+		"','", "'['", "']'", "NUMBER", "HEX_CODE", "LETTER", "WS", "BlockComment", 
+		"LineComment"
 	};
 	public static final int
 		RULE_eval = 0, RULE_body = 1, RULE_braces = 2, RULE_emptyBraces = 3, RULE_methodBody = 4, 
@@ -504,7 +505,7 @@ public class ScratchCLikeParser extends Parser {
 			setState(102); match(RETURN_TAG);
 			setState(104);
 			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << IDENTIFIER) | (1L << STRINGLITERAL) | (1L << OPENP) | (1L << NUMBER))) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << IDENTIFIER) | (1L << STRINGLITERAL) | (1L << OPENP) | (1L << NUMBER) | (1L << HEX_CODE))) != 0)) {
 				{
 				setState(103); varExp();
 				}
@@ -573,7 +574,7 @@ public class ScratchCLikeParser extends Parser {
 			setState(111);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << IDENTIFIER) | (1L << STRINGLITERAL) | (1L << OPENP) | (1L << NUMBER))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << IDENTIFIER) | (1L << STRINGLITERAL) | (1L << OPENP) | (1L << NUMBER) | (1L << HEX_CODE))) != 0)) {
 				{
 				{
 				setState(108); varExp();
@@ -1172,7 +1173,7 @@ public class ScratchCLikeParser extends Parser {
 			setState(197); match(OPENP);
 			setState(199);
 			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << IDENTIFIER) | (1L << STRINGLITERAL) | (1L << OPENP) | (1L << NUMBER))) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << IDENTIFIER) | (1L << STRINGLITERAL) | (1L << OPENP) | (1L << NUMBER) | (1L << HEX_CODE))) != 0)) {
 				{
 				setState(198); params();
 				}
@@ -1297,6 +1298,7 @@ public class ScratchCLikeParser extends Parser {
 			return getRuleContext(ArrayIdentifierContext.class,0);
 		}
 		public TerminalNode IDENTIFIER() { return getToken(ScratchCLikeParser.IDENTIFIER, 0); }
+		public TerminalNode HEX_CODE() { return getToken(ScratchCLikeParser.HEX_CODE, 0); }
 		public MathExpContext mathExp() {
 			return getRuleContext(MathExpContext.class,0);
 		}
@@ -1329,7 +1331,7 @@ public class ScratchCLikeParser extends Parser {
 				{
 				setState(216);
 				_la = _input.LA(1);
-				if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << IDENTIFIER) | (1L << STRINGLITERAL) | (1L << NUMBER))) != 0)) ) {
+				if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << IDENTIFIER) | (1L << STRINGLITERAL) | (1L << NUMBER) | (1L << HEX_CODE))) != 0)) ) {
 				_errHandler.recoverInline(this);
 				}
 				consume();
@@ -1994,7 +1996,7 @@ public class ScratchCLikeParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\66\u0135\4\2\t\2"+
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\67\u0135\4\2\t\2"+
 		"\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13"+
 		"\t\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
 		"\4\23\t\23\4\24\t\24\4\25\t\25\4\26\t\26\4\27\t\27\4\30\t\30\4\31\t\31"+
@@ -2019,7 +2021,7 @@ public class ScratchCLikeParser extends Parser {
 		"\13\34\3\35\3\35\3\35\3\35\5\35\u0126\n\35\5\35\u0128\n\35\3\35\3\35\3"+
 		"\35\3\35\5\35\u012e\n\35\3\36\3\36\3\36\3\36\3\36\3\36\2\2\37\2\4\6\b"+
 		"\n\f\16\20\22\24\26\30\32\34\36 \"$&(*,.\60\62\64\668:\2\n\3\2\32\37\3"+
-		"\2\6\7\3\2\t\n\3\2\13\f\3\2\r\16\3\2*,\3\2-.\4\2#$\62\62\u0143\2<\3\2"+
+		"\2\6\7\3\2\t\n\3\2\13\f\3\2\r\16\3\2*,\3\2-.\4\2#$\62\63\u0143\2<\3\2"+
 		"\2\2\4B\3\2\2\2\6L\3\2\2\2\bN\3\2\2\2\nR\3\2\2\2\fd\3\2\2\2\16h\3\2\2"+
 		"\2\20l\3\2\2\2\22x\3\2\2\2\24\u0084\3\2\2\2\26\u0090\3\2\2\2\30\u009b"+
 		"\3\2\2\2\32\u00a5\3\2\2\2\34\u00ab\3\2\2\2\36\u00b7\3\2\2\2 \u00c4\3\2"+

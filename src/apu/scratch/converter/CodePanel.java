@@ -18,6 +18,7 @@ import static apu.antlr.clike.ScratchCLikeLexer.BOOL_TRUE;
 import static apu.antlr.clike.ScratchCLikeLexer.BlockComment;
 import static apu.antlr.clike.ScratchCLikeLexer.ELSE_TAG;
 import static apu.antlr.clike.ScratchCLikeLexer.FOR_TAG;
+import static apu.antlr.clike.ScratchCLikeLexer.HEX_CODE;
 import static apu.antlr.clike.ScratchCLikeLexer.IDENTIFIER;
 import static apu.antlr.clike.ScratchCLikeLexer.IF_TAG;
 import static apu.antlr.clike.ScratchCLikeLexer.LineComment;
@@ -93,6 +94,7 @@ import javax.swing.text.TabStop;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Token;
+import org.json.JSONArray;
 
 import apu.antlr.clike.ScratchCLikeLexer;
 import apu.scratch.converter.ScratchConverter.CompileError;
@@ -121,6 +123,7 @@ public class CodePanel extends JPanel {
 		ScratchCLikeLexer lexer;
 		File saveFile = null;
 		List<CompileError> currentErrors = new ArrayList<CompileError>();
+		JSONArray currentJson;
 
 		public Tab() {
 			title = new JLabel("New File");
@@ -216,6 +219,10 @@ public class CodePanel extends JPanel {
 			StyleConstants.setForeground(style, Color.RED);
 			StyleConstants.setUnderline(style, true);
 			styles.put(1000, style);
+			style = context.addStyle("hex", defaultStyle);
+			StyleConstants.setItalic(style, true);
+			StyleConstants.setForeground(style, new Color(0f, 0.7f, 0.5f));
+			styles.put(HEX_CODE, style);
 
 			compileTimer = new Runnable() {
 				@Override
@@ -335,6 +342,7 @@ public class CodePanel extends JPanel {
 				lines.setBackground(Color.white);
 				try {
 					CompileResult result = ScratchConverter.compile(code);
+					currentJson = result.scripts;
 					currentErrors.clear();
 					currentErrors.addAll(result.errors);
 					highlightErrorLines();
@@ -343,7 +351,7 @@ public class CodePanel extends JPanel {
 								result.scripts.toString(), save);
 					if (save) {
 						if (saveFile == null) {
-							File f = SavePanel.showDialog(true, true);
+							File f = SavePanel.showDialog(false, true, true);
 							if (f != null) {
 								saveFile = f;
 								IdeFrame.instance.lblFile.setText("File: "
