@@ -52,6 +52,8 @@
 			<fileset dir="${src.dir}" includes="scratchblocks2/**/*" />
 			<fileset file="${src.dir}/builtin.csv" />
 			<fileset file="${src.dir}/Sprite1.sprite2" />
+			<fileset file="${src.dir}/BaseProject.sb2" />
+			<fileset file="${src.dir}/BaseSprite.json" />
 		</jar>
 		<echo>Building launcher jar</echo>
 		<jar destfile="${jar.dir}/${mainjar.name}.jar">
@@ -84,6 +86,8 @@
 			<fileset dir="${jclasses.dir}" />
 			<fileset file="${src.dir}/builtin.csv" />
 			<fileset file="${src.dir}/Sprite1.sprite2" />
+			<fileset file="${src.dir}/BaseProject.sb2" />
+			<fileset file="${src.dir}/BaseSprite.json" />
 			<zipfileset src="${lib.dir}/antlr-4.4-runtime.jar" />
 		</jar>
 		<echo>Build complete</echo>
