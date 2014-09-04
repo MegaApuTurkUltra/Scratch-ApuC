@@ -11,10 +11,12 @@
 
 	<property name="jar.dir" value="dist" />
 	<property name="main-class" value="apu.scratch.converter.NsLauncher" />
+	<property name="noswt-main-class" value="apu.scratch.converter.IdeMainNoSwt" />
 	<property name="lib.dir" value="lib" />
 
 	<property name="ide.name" value="IDE" />
 	<property name="mainjar.name" value="ApuC" />
+	<property name="ide_no_swt.name" value="ApuC-noswt" />
 	<property name="cmdline.name" value="apuc-compile" />
 
 	<path id="classpath">
@@ -67,14 +69,29 @@
 			<zipfileset src="jar-in-jar-loader.zip" />
 			<fileset dir="${lclasses.dir}" />
 			<fileset file="${lsrc.dir}/logo.png" />
-			<zipfileset dir="${lib.dir}" includes="jna-4.0.0.jar" />
-			<zipfileset dir="${lib.dir}" includes="commons-lang3-3.3.2.jar" />
-			<zipfileset dir="${lib.dir}" includes="MozillaInterfaces-1.8.1.3.jar" />
-			<zipfileset dir="${lib.dir}" includes="antlr-4.4-runtime.jar" />
-			<zipfileset dir="${lib.dir}" includes="seaglasslookandfeel-0.2.jar" />
-			<zipfileset dir="${lib.dir}" includes="jna_WindowUtils.jar" />
 			<zipfileset dir="${lsrc.dir}" includes="IDE.jar" />
 			<zipfileset dir="${lsrc.dir}" includes="lib/*" />
+			<zipfileset dir="${lib.dir}" includes="**/*.jar" />
+		</jar>
+		<echo>Building IDE jar [no swt]</echo>
+		<jar destfile="${jar.dir}/${ide_no_swt.name}.jar">
+			<manifest>
+				<attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader" />
+				<attribute name="Rsrc-Main-Class" value="${noswt-main-class}" />
+				<attribute name="Class-Path" value="." />
+				<attribute name="Rsrc-Class-Path" value="./ antlr-4.4-runtime.jar seaglasslookandfeel-0.2.jar" />
+				<attribute name="SplashScreen-Image" value="logo.png" />
+			</manifest>
+			<zipfileset src="jar-in-jar-loader.zip" />
+			<fileset file="${lsrc.dir}/logo.png" />
+			<zipfileset dir="${lib.dir}" includes="antlr-4.4-runtime.jar" />
+			<zipfileset dir="${lib.dir}" includes="seaglasslookandfeel-0.2.jar" />
+			<fileset dir="${jclasses.dir}" />
+			<fileset dir="${classes.dir}" excludes="apu/scratch/converter/IdeMain$$*.class" />
+			<fileset file="${src.dir}/builtin.csv" />
+			<fileset file="${src.dir}/Sprite1.sprite2" />
+			<fileset file="${src.dir}/BaseProject.sb2" />
+			<fileset file="${src.dir}/BaseSprite.json" />
 		</jar>
 		<echo>Building command line compiler jar</echo>
 		<jar destfile="${jar.dir}/${cmdline.name}.jar">

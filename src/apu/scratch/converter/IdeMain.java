@@ -27,12 +27,13 @@ import chrriis.dj.nativeswing.swtimpl.components.JWebBrowser;
  * 
  */
 public class IdeMain {
+	static { // this static initializer will hopefully fix the OSX display bug
+		NativeInterface.open();
+	}
 	static JWebBrowser sb2;
-	static File apuCTarget = null;
-	static File sprite2Target = null;
 
 	public static void launch() {
-		System.out.println("Launch");
+		System.out.println("Opening IDE [swt enabled]");
 		try {
 			ScratchConverter.init();
 		} catch (IOException e) {
@@ -45,7 +46,6 @@ public class IdeMain {
 		ToolTipManager.sharedInstance().setReshowDelay(0);
 		ToolTipManager.sharedInstance().setInitialDelay(0);
 		ToolTipManager.sharedInstance().setDismissDelay(Integer.MAX_VALUE);
-		NativeInterface.open();
 
 		try {
 			new File("scratchblocks2/block_images/").mkdirs();

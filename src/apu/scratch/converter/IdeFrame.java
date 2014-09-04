@@ -5,6 +5,7 @@ package apu.scratch.converter;
 
 import java.awt.BorderLayout;
 import java.awt.Desktop;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -260,6 +261,7 @@ public class IdeFrame extends JFrame {
 		leftSplit.add(panel, BorderLayout.CENTER);
 
 		final JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane.setMinimumSize(new Dimension(0, 0));
 		mainSplit.setRightComponent(tabbedPane);
 
 		sbRender = new JPanel();
