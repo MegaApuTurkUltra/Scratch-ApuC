@@ -51,7 +51,8 @@ public class IdeMainNoSwt {
 	}
 
 	public static void main(String[] args) {
-		System.out.println("Opening IDE [no swt]");
+		System.out.println("Opening IDE [no swt]; use -uselaf to enable the LAF");
+		final boolean useLaf = args.length > 0 && args[0].equalsIgnoreCase("-uselaf");
 		try {
 			ScratchConverter.init();
 		} catch (IOException e) {
@@ -67,7 +68,7 @@ public class IdeMainNoSwt {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				IdeFrame.launch();
+				IdeFrame.launch(useLaf);
 				IdeFrame.instance.sbRender.setLayout(new LazyLayoutManager());
 				IdeFrame.instance.sbRender.add(new JLabel(
 						"Preview diabled - run ApuC.jar instead to see it"));

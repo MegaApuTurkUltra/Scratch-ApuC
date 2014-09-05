@@ -70,7 +70,7 @@ public class IdeMain {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				IdeFrame.launch();
+				IdeFrame.launch(true);
 				try {
 					sb2 = new JWebBrowser();
 					sb2.setBarsVisible(false);

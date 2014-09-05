@@ -158,7 +158,6 @@ public class CodePanel extends JPanel {
 				}
 			});
 			defaultStyle = context.getStyle(StyleContext.DEFAULT_STYLE);
-			StyleConstants.setFontFamily(defaultStyle, "monospaced");
 			Style style = context.addStyle("identifier", defaultStyle);
 			StyleConstants.setForeground(style, Color.BLUE);
 			StyleConstants.setItalic(style, true);

@@ -11,6 +11,7 @@ import java.io.File;
 
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
@@ -27,6 +28,8 @@ public class SavePanel extends JPanel {
 
 	public File selected = null;
 	JDialog owner;
+
+	static JDialog loading;
 
 	public SavePanel(boolean sb2, boolean save, boolean apuc, JDialog owner) {
 		this.owner = owner;
@@ -100,7 +103,22 @@ public class SavePanel extends JPanel {
 		owner.setVisible(false);
 	}
 
+	public static void init() {
+		loading = new JDialog(IdeFrame.instance, "Loading...",
+				ModalityType.MODELESS);
+		loading.getContentPane().setLayout(new BorderLayout());
+		loading.getContentPane().add(
+				new JLabel("File choosers take some time for some reason"),
+				BorderLayout.CENTER);
+		loading.setSize(300, 100);
+		loading.setLocationRelativeTo(IdeFrame.instance);
+	}
+
 	public static File showDialog(boolean sb2, boolean apuc, boolean save) {
+		loading.setLocationRelativeTo(IdeFrame.instance);
+		loading.setVisible(true);
+		loading.paint(loading.getGraphics()); // so much hax
+		// too lazy to get this off the EDT
 		JDialog d = new JDialog();
 		d.setModalityType(ModalityType.APPLICATION_MODAL);
 		SavePanel p = new SavePanel(sb2, save, apuc, d);
@@ -108,6 +126,7 @@ public class SavePanel extends JPanel {
 		d.getContentPane().add(p, BorderLayout.CENTER);
 		d.pack();
 		d.setLocationRelativeTo(p);
+		loading.setVisible(false);
 		d.setVisible(true);
 		return p.selected;
 	}

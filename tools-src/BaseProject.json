@@ -1,0 +1,34 @@
+{
+	"objName": "Stage",
+	"sounds": [{
+			"soundName": "pop",
+			"soundID": 1,
+			"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+			"sampleCount": 258,
+			"rate": 11025,
+			"format": ""
+		}],
+	"costumes": [{
+			"costumeName": "backdrop1",
+			"baseLayerID": 1,
+			"baseLayerMD5": "739b5e2a2435f6e1ec2993791b423146.png",
+			"bitmapResolution": 1,
+			"rotationCenterX": 240,
+			"rotationCenterY": 180
+		}],
+	"currentCostumeIndex": 0,
+	"penLayerMD5": "5c81a336fab8be57adc039a8a2b33ca9.png",
+	"penLayerID": 0,
+	"tempoBPM": 60,
+	"videoAlpha": 0.5,
+	"children": [],
+	"info": {
+		"videoOn": false,
+		"scriptCount": 0,
+		"swfVersion": "derp",
+		"spriteCount": 0,
+		"userAgent": "ApuC Compiler",
+		"projectID": "0",
+		"flashVersion": "0"
+	}
+}

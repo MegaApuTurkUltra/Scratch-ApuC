@@ -7,6 +7,7 @@ import java.awt.BorderLayout;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -53,15 +54,32 @@ public class IdeFrame extends JFrame {
 		}
 	};
 
-	public static void launch() {
-		try {
-			UIManager.setLookAndFeel(new SeaGlassLookAndFeel());
-		} catch (Exception e) {
-			e.printStackTrace();
+	public static void launch(boolean laf) {
+		if (laf) {
+			try {
+				UIManager.setLookAndFeel(new SeaGlassLookAndFeel());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else {
+			try {
+				UIManager.setLookAndFeel(UIManager
+						.getSystemLookAndFeelClassName());
+			} catch (Exception e) {
+				e.printStackTrace();
+				try {
+					UIManager.setLookAndFeel(UIManager
+							.getCrossPlatformLookAndFeelClassName());
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			}
 		}
+		UIManager.put("TextPane.font", new Font(Font.MONOSPACED, Font.PLAIN, 13));
 		try {
 			instance = new IdeFrame();
 			instance.setVisible(true);
+			SavePanel.init();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
