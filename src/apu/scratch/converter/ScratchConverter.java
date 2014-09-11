@@ -305,10 +305,13 @@ public class ScratchConverter {
 		int uid;
 		Context parent;
 		List<String> variables = new ArrayList<String>();
+		List<Context> children = new ArrayList<Context>();
 		Method belongsTo = null;
 
 		public Context(Context parent) {
 			this.parent = parent;
+			if (parent != null)
+				parent.children.add(this);
 			do {
 				uid = Math.abs(random.nextInt());
 			} while (usedIds.contains(uid));
@@ -316,10 +319,13 @@ public class ScratchConverter {
 		}
 
 		public boolean hasVar(String name) {
+			System.out.println(uid + " " + name + " "
+					+ variables.contains(name));
 			return variables.contains(name);
 		}
 
 		public boolean parentHasVar(String name) {
+			System.out.println("new parenthasvar");
 			if (parent == null)
 				return false;
 			else
@@ -328,7 +334,7 @@ public class ScratchConverter {
 
 		private boolean _parentHasVar0(String name) {
 			if (parent != null) {
-				return variables.contains(name) || parent.hasVar(name);
+				return variables.contains(name) || parent._parentHasVar0(name);
 			} else {
 				return variables.contains(name);
 			}
@@ -480,6 +486,7 @@ public class ScratchConverter {
 	 *             If a serious syntax error happens
 	 */
 	public static CompileResult compile(final String code) throws Exception {
+		System.out.println("Compiling...");
 		methods.clear();
 		errors.clear();
 		root = new JSONArray();
@@ -524,7 +531,7 @@ public class ScratchConverter {
 				pos += charPositionInLine;
 				CompileError error = new CompileError(pos, line - 1,
 						charPositionInLine, msg);
-				if (e.getOffendingToken() != null) {
+				if (e != null && e.getOffendingToken() != null) {
 					error.position = e.getOffendingToken().getStopIndex();
 					error.endPosition = e.getOffendingToken().getStopIndex();
 				}
@@ -555,7 +562,21 @@ public class ScratchConverter {
 		CompileResult result = new CompileResult();
 		result.scripts = arr;
 		result.errors = new ArrayList<>(errors);
+
+		parseContexts(currentContext, "");
+
 		return result;
+	}
+
+	static void parseContexts(Context c, String d) {
+		System.out.print(d + c.uid);
+		for (String s : c.variables) {
+			System.out.print(" " + s);
+		}
+		System.out.println();
+		for (Context c2 : c.children) {
+			parseContexts(c2, d + "\t");
+		}
 	}
 
 	static void pushWhen() {

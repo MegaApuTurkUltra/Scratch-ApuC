@@ -338,7 +338,6 @@ public class CodePanel extends JPanel {
 			stackTrace = null;
 			try {
 				String code = doc.getText(0, doc.getEndPosition().getOffset());
-				lines.setBackground(Color.white);
 				try {
 					CompileResult result = ScratchConverter.compile(code);
 					currentJson = result.scripts;
@@ -364,7 +363,6 @@ public class CodePanel extends JPanel {
 						}
 					}
 				} catch (Exception e) {
-					lines.setBackground(new Color(1f, 0.5f, 0.5f));
 					StyledDocument doc = lines.getStyledDocument();
 					doc.setCharacterAttributes(0, doc.getEndPosition()
 							.getOffset(), linesRedStyle, true);

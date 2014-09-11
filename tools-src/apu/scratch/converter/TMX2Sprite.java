@@ -20,6 +20,7 @@ import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.imageio.ImageIO;
 
@@ -33,7 +34,7 @@ import org.json.JSONObject;
  * @author MegaApuTurkUltra
  */
 public class TMX2Sprite {
-	static Map<Integer, BufferedImage> tiles = new HashMap<Integer, BufferedImage>();
+	static Map<Integer, BufferedImage> tiles = new TreeMap<Integer, BufferedImage>();
 
 	public static void main(String[] args) throws Exception {
 		File input = new File(args[0]);
@@ -61,17 +62,21 @@ public class TMX2Sprite {
 			int id = ts.getInt("firstgid");
 			for (int y = 0; y < ih; y += th) {
 				for (int x = 0; x < iw; x += tw) {
-					System.out.println("\t"+x+" "+y);
+					System.out.println("\t" + x + " " + y);
 					BufferedImage tile = new BufferedImage(tw, th,
 							BufferedImage.TYPE_INT_ARGB);
 					Graphics2D g = tile.createGraphics();
 					g.drawImage(image, 0, 0, tw, th, x, y, x + tw, y + th, null);
-					g.dispose();
 					tiles.put(id, tile);
 					id++;
 				}
 			}
 		}
+
+		for (Integer i : tiles.keySet()) {
+			System.out.println(i);
+		}
+		
 		JSONArray variables = new JSONArray();
 		variables.put(createVar("MAP_WIDTH", main.get("width")));
 		variables.put(createVar("MAP_HEIGHT", main.get("height")));
@@ -119,7 +124,7 @@ public class TMX2Sprite {
 			System.out.println(md5);
 			JSONObject costume = new JSONObject();
 			costumes.put(costume);
-			costume.put("costumeName", j + "");
+			costume.put("costumeName", "tile" + (j - 1));
 			costume.put("baseLayerID", j);
 			costume.put("baseLayerMD5", md5 + ".png");
 			costume.put("bitmapResolution", 1);
