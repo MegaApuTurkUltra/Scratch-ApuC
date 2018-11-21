@@ -86,7 +86,7 @@ sensorValue,sensor:,() Sensor Value
 isSensorPressed,sensorPressed:,Sensor ()?
 setEffectTo,setGraphicEffect:to:,Set () Effect to ()
 setListItem,setLine:ofList:to:,Replace Item () of () With ()
-setPenColor,setPenHueTo:,Set Pen Color to ()
+setPenHue,setPenHueTo:,Set Pen Color to ()
 setPenShade,setPenShadeTo:,Set Pen Shade to ()
 setRotationStyle,setRotationStyle,Set Rotation Style ()
 setSize,setSizeTo:,Set Size to ()%
